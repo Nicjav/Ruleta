@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rueda con Mensaje por Sección</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #9dd5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+    }
+
+    .contenedor-principal {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .contenedor-rueda {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rueda {
+      width: 100%;
+      height: 100%;
+    }
+
+    .flecha {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      z-index: 10;
+    }
+
+    .mensaje {
+      display: none;
+      padding: 20px;
+      background-color: #fff;
+      border: 2px solid #004080;
+      border-radius: 10px;
+      font-size: 18px;
+      width: 300px;
+      text-align: left;
+    }
+
+    .botones {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #004080;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-principal">
+    
+    <div>
+      <div class="contenedor-rueda">
+        <img src="flecha.png" alt="Flecha" class="flecha">
+        <img src="rueda.png" alt="Rueda" class="rueda" id="rueda">
+      </div>
+
+      <div class="botones">
+        <button onclick="iniciarGiro()">Girar</button>
+        <button onclick="detenerGiro()">Detener</button>
+      </div>
+    </div>
+
+   
+    <div id="mensajeDinamico" class="mensaje"></div>
+  </div>
+
+  <script>
+    const rueda = document.getElementById("rueda");
+    let angulo = 0;
+    let velocidad = 0;
+    let girando = false;
+    let rafId;
+
+    function rotar() {
+      if (!girando && velocidad <= 0) {
+        cancelAnimationFrame(rafId);
+        return;
+      }
+
+      angulo += velocidad;
+      rueda.style.transform = `rotate(${angulo}deg)`;
+
+      if (!girando && velocidad > 0) {
+        velocidad -= 0.2;
+        if (velocidad < 0) velocidad = 0;
+      }
+
+      rafId = requestAnimationFrame(rotar);
+    }
+
+    function iniciarGiro() {
+      const mensajeDiv = document.getElementById("mensajeDinamico");
+      mensajeDiv.style.display = "none";
+      if (!girando) {
+        girando = true;
+        velocidad = 1;
+        rafId = requestAnimationFrame(rotar);
+      }
+    }
+
+    function detenerGiro() {
+      girando = false;
+
+      setTimeout(() => {
+        const anguloFinal = angulo % 360;
+        const seccion = Math.floor(((360 - anguloFinal + 15) % 360) / 30); 
+
+        const mensajeDiv = document.getElementById("mensajeDinamico");
+        let mensaje = "";
+
+        
+        switch (seccion) {
+          case 0: mensaje = "Mensaje para fracción 1"; break;
+          case 1: mensaje = "Mensaje para fracción 2"; break;
+          case 2: mensaje = "Mensaje para fracción 3"; break;
+          case 3: mensaje = "Mensaje para fracción 4"; break;
+          case 4: mensaje = "Mensaje para fracción 5"; break;
+          case 5: mensaje = "Mensaje para fracción 6"; break;
+          case 6: mensaje = "Mensaje para fracción 7"; break;
+          case 7: mensaje = "Mensaje para fracción 8"; break;
+          case 8: mensaje = "Mensaje para fracción 9"; break;
+          case 9: mensaje = "Mensaje para fracción 10"; break;
+          case 10: mensaje = "Mensaje para fracción 11"; break;
+          case 11: mensaje = "Mensaje para fracción 12"; break;
+          default: mensaje = "Mensaje desconocido"; break;
+        }
+
+        mensajeDiv.textContent = mensaje;
+        mensajeDiv.style.display = "block";
+
+        console.log(`Ángulo final: ${anguloFinal.toFixed(2)}°, Sección: ${seccion + 1}`);
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
