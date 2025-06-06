@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rueda con Mensaje por Sección</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #9dd5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+    }
+
+    .contenedor-principal {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .contenedor-rueda {
+      position: relative;
+      width: 700px;
+      height: 700px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rueda {
+      width: 100%;
+      height: 100%;
+    }
+
+    .flecha {
+      position: absolute;
+      top: 100px; /* Más cerca de la ruleta */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      z-index: 10;
+    }
+
+    .mensaje {
+      display: none;
+      padding: 20px;
+      background-color: #fff;
+      border: 2px solid #004080;
+      border-radius: 10px;
+      font-size: 18px;
+
+      text-align: left;
+    }
+
+    .botones {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #004080;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-principal">
+    <!-- Rueda y flecha -->
+    <div>
+      <div class="contenedor-rueda">
+        <img src="flecha.png" alt="Flecha" class="flecha">
+        <img src="rueda.png" alt="Rueda" class="rueda" id="rueda">
+      </div>
+
+      <div class="botones">
+        <button onclick="iniciarGiro()">Girar</button>
+        <button onclick="detenerGiro()">Detener</button>
+      </div>
+    </div>
+
+   
+    <div id="mensajeDinamico" class="mensaje"></div>
+  </div>
+
+  <script>
+    const rueda = document.getElementById("rueda");
+    let angulo = 0;
+    let velocidad = 0;
+    let girando = false;
+    let rafId;
+
+    function rotar() {
+      if (!girando && velocidad <= 0) {
+        cancelAnimationFrame(rafId);
+        return;
+      }
+
+      angulo += velocidad;
+      rueda.style.transform = `rotate(${angulo}deg)`;
+
+      if (!girando && velocidad > 0) {
+        velocidad -= 0.4; // Frenado más rápido
+        if (velocidad < 0) velocidad = 0;
+      }
+
+      rafId = requestAnimationFrame(rotar);
+    }
+
+    function iniciarGiro() {
+      const mensajeDiv = document.getElementById("mensajeDinamico");
+      mensajeDiv.style.display = "none";
+      if (!girando) {
+        girando = true;
+        velocidad = 0.5; // Velocidad inicial mayor
+        rafId = requestAnimationFrame(rotar);
+      }
+    }
+
+    function detenerGiro() {
+      girando = false;
+
+      setTimeout(() => {
+        const anguloFinal = angulo % 360;
+        const seccion = Math.floor(((360 - anguloFinal +15) % 360) / 30); // 12 secciones de 30°
+
+        const mensajeDiv = document.getElementById("mensajeDinamico");
+        let mensaje = "";
+
+        switch (seccion) {
+          case 0: mensaje = "Rojo + Amarillo = Energéticos, seguros de sí mismos y convincentes. Lideran con determinación y entusiasmo. Son personas que contagian su visión, toman decisiones sin titubeos y buscan el impacto. Pueden mostrar impaciencia cuando otros no siguen su ritmo."; break;
+          case 1: mensaje = "Amarillo + Rojo = Carismáticos, ambiciosos y orientados a la acción. Buscan resultados rápidos, motivan a los demás con su energía, y tienden a tomar decisiones impulsadas tanto por el deseo de logro, cómo por las personas que los rodean. Su estilo de comunicación puede ser persuasivo y/o dominante."; break;
+          case 2: mensaje = "Amarillo + Azul = Actúan con entusiasmo y calidez, pero se apoyan en el análisis cuando lo requieren. Son creativos y expresivos, sin descuidar la lógica y el contenido de lo que comunican. Les interesa conectar emocionalmente, pero también transmitir credibilidad."; break;
+          case 3: mensaje = "Amarillo + Verde = Empáticos, cercanos y amigables. Les interesa mantener relaciones armoniosas, pero también disfrutan del dinamismo social. Son personas colaborativas, que buscan la calma y armonía en el equipo, actuando desde la emoción y la sensibilidad. "; break;
+          case 4: mensaje = "Verde + Amarillo = Cálidos, serviciales y sociables. Les interesa generar bienestar en su entorno y agradar a los demás. Su estilo es suave, cooperativo y optimista. A veces posponen decisiones por evitar confrontaciones o incomodidades."; break;
+          case 5: mensaje = "Verde + Rojo  = Estables, decididos y resistentes a la presión. Tienen una gran capacidad para mantener la calma en situaciones difíciles. Aunque no son impulsivos, cuando actúan lo hacen con determinación. Combinan la paciencia con la capacidad de avanzar con firmeza."; break;
+          case 6: mensaje = "Verde + Azul = Cautelosos, sistemáticos y confiables. Valoran tanto el orden como la armonía. Son perfeccionistas tranquilos: les importa hacer las cosas bien y sin generar tensiones. Se toman su tiempo para actuar, pero lo hacen con profundidad y sentido."; break;
+          case 7: mensaje = "Azul + Verde = Metódicos, cautelosos, evitan el riesgo. Por ende son pausados al momento de actuar o tomar decisiones, priorizando la calidad en sus acciones. Actúan, sin prisa pero sin pausa. "; break;
+          case 8: mensaje = "Azul + Amarillo = Actúan desde la lógica pero se permiten cierta espontaneidad. Tienen pensamiento estructurado, aunque predomina la razón, tienen gran afinidad por el contacto con otras personas y valoran el componente emocional. Buscan precisión sin perder la estética y dinamismo. Son creativos y dinámicos. = Actúan desde la lógica pero se permiten cierta espontaneidad. Tienen pensamiento estructurado, aunque predomina la razón, tienen gran afinidad por el contacto con otras personas y valoran el componente emocional. Buscan precisión sin perder la estética y dinamismo. Son creativos y dinámicos."; break;
+          case 9: mensaje = "Azul + Rojo = Directos, con orientación al logro, pero sin perder de vista el detalle, proceso y la calidad. A pesar de ser cautelosos y analíticos toman decisiones de forma rápida, fundamentados en hechos, datos y cifras."; break;
+          case 10: mensaje = "Rojo + Azul = Pragmáticos, eficientes y exigentes, pero con una base sólida en la precisión y los procesos. No toman decisiones a la ligera: su rapidez está respaldada por el análisis. Se enfocan en resultados medibles, cuidando los estándares de calidad."; break;
+          case 11: mensaje = "Rojo + Verde = Actúan con firmeza, pero de forma respetuosa y estable. Son determinados, pero valoran la constancia y la armonía. Pueden parecer tranquilos por fuera, pero son muy orientados a objetivos. Cuando deciden, lo hacen con convicción y prudencia."; break;
+          default: mensaje = "Mensaje desconocido"; break;
+        }
+
+        mensajeDiv.textContent = mensaje;
+        mensajeDiv.style.display = "block";
+
+        console.log(`Ángulo final: ${anguloFinal.toFixed(2)}°, Sección: ${seccion + 1}`);
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
